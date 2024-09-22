@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Términos Médicos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: url('_d2acfe90-615f-4063-82d7-21a4d2267879.jpeg'); /* Aquí se utiliza la imagen que subiste */
+            background-size: cover;
+            background-position: center;
+            margin: 0;
+button {
+    padding: 10px 20px;
+    margin: 5px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.3s ease, background-color 0.3s; /* Animación suave */
+}
+
+button:hover {
+    transform: scale(1.1); /* Aumenta el tamaño ligeramente */
+    background-color: #0056b3; /* Cambia el color al pasar el ratón */
+}
+
+        }
+        .game-container {
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco semitransparente para el contenido */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+        .term {
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .definition {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+            min-height: 60px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button.show-definition {
+            background-color: #007BFF;
+            color: #fff;
+        }
+        button.next-term {
+            background-color: #28A745;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <div class="term" id="term">Colerético</div>
+    <div class="definition" id="definition">Haz clic en "Mostrar definición" para saber qué significa.</div>
+    <button class="show-definition" onclick="showDefinition()">Mostrar definición</button>
+    <button class="next-term" onclick="nextTerm()">Siguiente palabra</button>
+</div>
+
+<script>
+    // Lista de términos y definiciones (completa)
+    const terms = [
+        { name: "Colerético", definition: "Estimula la producción de bilis en el hígado." },
+        { name: "Colagogo", definition: "Facilita la expulsión de bilis de la vesícula biliar al intestino." },
+        { name: "Coadyuvante", definition: "Sustancia que potencia el efecto de un medicamento principal." },
+        { name: "Rubefaciente", definition: "Produce enrojecimiento de la piel al aumentar el flujo sanguíneo." },
+        { name: "Hipoglicemiante", definition: "Disminuye los niveles de glucosa en la sangre." },
+        { name: "Antipirético", definition: "Reduce la fiebre." },
+        { name: "Antiséptico", definition: "Sustancia que previene o detiene el crecimiento de microorganismos." },
+        { name: "Dispepsias", definition: "Trastornos digestivos que causan dolor o malestar en el abdomen." },
+        { name: "Aftas", definition: "Pequeñas úlceras dolorosas en la boca." },
+        { name: "Diurético", definition: "Aumenta la producción y excreción de orina." },
+        { name: "Inmunomodulador", definition: "Regula o normaliza el sistema inmunitario." },
+        { name: "Astenia", definition: "Sensación de fatiga y debilidad sin esfuerzo físico notable." },
+        { name: "Diaforéticas", definition: "Provocan la transpiración." },
+        { name: "Emenagogo", definition: "Favorece o regula el flujo menstrual." },
+        { name: "Eupéptico", definition: "Facilita la digestión." },
+        { name: "Emoliente", definition: "Suaviza e hidrata la piel o las mucosas." },
+        { name: "Carminativo", definition: "Alivia o previene la formación de gases en el tracto digestivo." },
+        { name: "Analgésico", definition: "Alivia o elimina el dolor." },
+        { name: "Antiemético", definition: "Previene o alivia los vómitos." },
+        { name: "Antiespasmódico", definition: "Calma o reduce los espasmos musculares." },
+        { name: "Depurativo", definition: "Ayuda a eliminar toxinas del cuerpo." },
+        { name: "Febrífugo", definition: "Sustancia que combate la fiebre." },
+        { name: "Catártico", definition: "Laxante que estimula la evacuación intestinal." },
+        { name: "Estomaquico", definition: "Facilita la digestión." },
+        { name: "Vermífugo", definition: "Expulsa los parásitos intestinales." },
+        { name: "Adaptogenos", definition: "Ayudan al cuerpo a adaptarse al estrés y equilibrar el organismo." },
+        { name: "Laxante", definition: "Aumenta el tránsito intestinal para facilitar la evacuación." },
+        { name: "Expectorante", definition: "Favorece la expulsión de mucosidad de las vías respiratorias." },
+        { name: "Antitusivo", definition: "Reduce la tos." },
+        { name: "Astringente", definition: "Contrae los tejidos y reduce las secreciones." },
+        { name: "Demulcente", definition: "Alivia y protege las mucosas inflamadas." },
+        { name: "Antihelmíntico", definition: "Elimina o expulsa los parásitos intestinales." },
+        { name: "Revulsivo", definition: "Produce irritación en la piel para aliviar un malestar interno." },
+        { name: "Hipolipemiante", definition: "Reduce los niveles de lípidos o grasas en la sangre." },
+        { name: "Antiequimotica", definition: "Previene o trata las equimosis (hematomas)." },
+        { name: "Midriático", definition: "Dilata la pupila." },
+        { name: "Anticolinérgico", definition: "Bloquea la acción del neurotransmisor acetilcolina, utilizado para tratar espasmos musculares." },
+        { name: "Ictericia", definition: "Color amarillento de la piel debido a problemas en el hígado." },
+        { name: "Hepatotonico", definition: "Estimula y mejora la función del hígado." },
+        { name: "Vulnerario", definition: "Ayuda a sanar las heridas y lesiones." },
+        { name: "Antiflogística", definition: "Reduce la inflamación." },
+        { name: "Resolutivo", definition: "Facilita la resolución de inflamaciones o abscesos." },
+        { name: "Galactogogas", definition: "Aumenta la producción de leche materna." },
+        { name: "Sialogogo", definition: "Estimula la producción de saliva." },
+        { name: "Venotónica", definition: "Mejora la tonicidad de las venas y alivia problemas circulatorios." }
+    ];
+
+    let currentIndex = 0;
+
+    // Función para mostrar la definición
+    function showDefinition() {
+        document.getElementById('definition').innerText = terms[currentIndex].definition;
+    }
+
+    // Función para pasar a la siguiente palabra
+    function nextTerm() {
+        currentIndex++;
+        if (currentIndex >= terms.length) {
+            currentIndex = 0;  // Reiniciar el índice cuando se llegue al final
+        }
+        document.getElementById('term').innerText = terms[currentIndex].name;
+        document.getElementById('definition').innerText = "Haz clic en 'Mostrar definición' para saber qué significa.";
+    }
+</script>
+
+</body>
+</html>
